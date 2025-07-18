@@ -1,0 +1,31 @@
+@{
+    var transacoes = ViewBag.Transacoes as List<BancoDigitalMVC.Models.Transacao>;
+    var conta = ViewBag.Conta as BancoDigitalMVC.Models.Conta;
+}
+
+<h2>Extrato da Conta @conta.NumeroConta</h2>
+<h4>Saldo Atual: R$ @conta.Saldo.ToString("N2")</h4>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor (R$)</th>
+            <th>Descrição</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transacao in transacoes.OrderByDescending(t => t.Data))
+        {
+            <tr>
+                <td>@transacao.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@transacao.Tipo</td>
+                <td>@transacao.Valor.ToString("N2")</td>
+                <td>@transacao.Descricao</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Cliente" class="btn btn-primary">Voltar</a>

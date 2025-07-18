@@ -1,0 +1,41 @@
+@{
+    var cliente = ViewBag.Cliente as BancoDigitalMVC.Models.Cliente;
+    var conta = ViewBag.Conta as BancoDigitalMVC.Models.Conta;
+}
+
+<h2>Olá, @cliente.Nome!</h2>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Conta: @conta.NumeroConta</h5>
+        <p class="card-text">Saldo: R$ @conta.Saldo.ToString("N2")</p>
+        
+        <div class="btn-group">
+            <a asp-action="Depositar" asp-controller="Transacao" class="btn btn-success">Depositar</a>
+            <a asp-action="Sacar" asp-controller="Transacao" class="btn btn-danger">Sacar</a>
+            <a asp-action="Transferencia" asp-controller="Transacao" class="btn btn-info">Transferir</a>
+            <a asp-action="Extrato" asp-controller="Transacao" class="btn btn-secondary">Extrato</a>
+        </div>
+    </div>
+</div>
+
+<!-- Seção rápida de últimas transações -->
+<h4 class="mt-4">Últimas Transações</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Descrição</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transacao in conta.Transacoes.Take(5).OrderByDescending(t => t.Data))
+        {
+            <tr>
+                <td>@transacao.Data.ToString("dd/MM/yyyy")</td>
+                <td>R$ @transacao.Valor.ToString("N2")</td>
+                <td>@transacao.Descricao</td>
+            </tr>
+        }
+    </tbody>
+</table>

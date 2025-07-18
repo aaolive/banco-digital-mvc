@@ -1,0 +1,8 @@
+@model BancoDigitalMVC.Models.Cliente
+
+<h2>Login</h2>
+<form asp-action="Login" method="post">
+    <input asp-for="Email" placeholder="E-mail" />
+    <input asp-for="Senha" type="password" placeholder="Senha" />
+    <button type="submit">Entrar</button>
+</form>
