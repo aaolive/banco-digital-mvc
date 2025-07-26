@@ -20,23 +20,44 @@ namespace BancoDigitalMVC.Controllers
             _db = db;
         }
 
-        // Cadastro de cliente
+        // GET: /Cliente/Index (Dashboard)
+        public IActionResult Index()
+        {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null) return RedirectToAction("Login", "Auth");
+
+            var cliente = _db.Clientes.Find(clienteId);
+            var conta = _db.Contas.FirstOrDefault(c => c.ClienteId == clienteId);
+
+            ViewBag.Cliente = cliente;
+            ViewBag.Conta = conta;
+            return View();
+        }
+
+        // GET: /Cliente/Perfil (Editar perfil)
+        public IActionResult Perfil()
+        {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null) return RedirectToAction("Login", "Auth");
+
+            var cliente = _db.Clientes.Find(clienteId);
+            return View(cliente);
+        }
+
+        // POST: /Cliente/Atualizar (Salvar alterações)
         [HttpPost]
-        public IActionResult Cadastrar(Cliente cliente)
+        public IActionResult Atualizar(Cliente clienteAtualizado)
         {
             if (ModelState.IsValid)
             {
-                _db.Clientes.Add(cliente);
-                _db.SaveChanges();
+                var cliente = _db.Clientes.Find(clienteAtualizado.Id);
+                cliente.Nome = clienteAtualizado.Nome;
+                cliente.Email = clienteAtualizado.Email;
 
-                // Cria uma conta para o cliente
-                var conta = new Conta { ClienteId = cliente.Id };
-                _db.Contas.Add(conta);
                 _db.SaveChanges();
-
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index");
             }
-            return View("Register", cliente);
+            return View("Perfil", clienteAtualizado);
         }
     }
 }
