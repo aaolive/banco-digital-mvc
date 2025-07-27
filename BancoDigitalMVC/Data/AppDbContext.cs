@@ -14,5 +14,8 @@ namespace BancoDigitalMVC.Data
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Conta> Contas { get; set; }
         public DbSet<Transacao> Transacoes { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlite("Data Source=BancoDigital.db");
     }
 }

@@ -3,6 +3,16 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Bem-vindo ao Banco Digital</h1>
+    
+    <!-- Seção de Links -->
+    <div class="mt-5">
+        <a asp-controller="Auth" asp-action="Register" class="btn btn-primary btn-lg mx-2">
+            <i class="bi bi-person-plus"></i> Cadastre-se
+        </a>
+        
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary btn-lg mx-2">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
+    </div>
 </div>
