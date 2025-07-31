@@ -4,6 +4,7 @@ using BancoDigitalMVC.Data;
 using System.Linq;
 
 namespace BancoDigitalMVC.Controllers;
+
 public class AuthController : Controller
 {
     private readonly AppDbContext _db;
@@ -21,28 +22,48 @@ public class AuthController : Controller
 
     // POST: /Auth/Register (Processa o cadastro)
     [HttpPost]
-    public IActionResult Register(Cliente cliente)
+    public async Task<IActionResult> Register(Cliente cliente)
     {
         if (ModelState.IsValid)
         {
-            // Verifica se o CPF ou E-mail já existem
-            if (_db.Clientes.Any(c => c.CPF == cliente.CPF || c.Email == cliente.Email))
+            try
             {
-                ModelState.AddModelError("", "CPF ou E-mail já cadastrados.");
-                return View(cliente);
+                // Seu código existente de cadastro
+                _db.Clientes.Add(cliente);
+                await _db.SaveChangesAsync();
+
+                // Cria conta associada
+                var conta = new Conta { ClienteId = cliente.Id };
+                _db.Contas.Add(conta);
+                await _db.SaveChangesAsync();
+
+                // Redireciona para confirmação com dados do cliente
+                return RedirectToAction("RegisterConfirmation", new { email = cliente.Email });
             }
-
-            _db.Clientes.Add(cliente);
-            _db.SaveChanges();
-
-            // Cria uma conta para o cliente
-            var conta = new Conta { ClienteId = cliente.Id };
-            _db.Contas.Add(conta);
-            _db.SaveChanges();
-
-            return RedirectToAction("Login");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Ocorreu um erro ao cadastrar. Tente novamente.");
+                // Log do erro (ex)
+            }
+        }
+        else if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                // Log ou debug aqui
+                Console.WriteLine(error.ErrorMessage);
+            }
+            return View(cliente);
         }
         return View(cliente);
+    }
+
+    [HttpGet]
+    public IActionResult RegisterConfirmation(string email)
+    {
+        ViewBag.Email = email; // Opcional: mostra o email cadastrado
+        return View();
     }
 
     // GET: /Auth/Login (Exibe o formulário)
