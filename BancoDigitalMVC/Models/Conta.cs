@@ -14,5 +14,11 @@ namespace BancoDigitalMVC.Models
         public Cliente Cliente { get; set; }
 
         public ICollection<Transacao> Transacoes { get; set; } // Histórico
+
+
+        public Conta()
+        {
+            Transacoes = new List<Transacao>();
+        }
     }
 }

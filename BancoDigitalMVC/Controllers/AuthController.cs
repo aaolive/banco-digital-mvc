@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using BancoDigitalMVC.Models;
 using BancoDigitalMVC.Data;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace BancoDigitalMVC.Controllers;
 
@@ -84,7 +85,15 @@ public class AuthController : Controller
     [HttpPost]
     public IActionResult Login(string email, string senha)
     {
-        var cliente = _db.Clientes.FirstOrDefault(c => c.Email == email && c.Senha == senha);
+        // Verifique se o serviço de sessão está disponível
+        if (HttpContext.Session == null)
+        {
+            throw new InvalidOperationException("Session service not available!");
+        }
+
+        var cliente = _db.Clientes
+            .Include(c => c.Conta) // Carrega a conta associada
+            .FirstOrDefault(c => c.Email == email && c.Senha == senha);
 
         if (cliente == null)
         {
@@ -92,8 +101,11 @@ public class AuthController : Controller
             return View();
         }
 
-        // Simples autenticação (em produção, use Identity!)
+        // Armazena informações na sessão
         HttpContext.Session.SetInt32("ClienteId", cliente.Id);
+        HttpContext.Session.SetString("ClienteNome", cliente.Nome);
+        HttpContext.Session.SetInt32("ContaId", cliente.Conta.Id);
+
         return RedirectToAction("Index", "Cliente");
     }
 
