@@ -22,23 +22,31 @@ public class AuthController : Controller
 
     // POST: /Auth/Register (Processa o cadastro)
     [HttpPost]
-    public async Task<IActionResult> Register(Cliente cliente)
+    public async Task<IActionResult> Register(ClienteDTO cliente)
     {
         if (ModelState.IsValid)
         {
             try
             {
+                // converte DTO para entidade
+                var clienteNovoParaCadastro = new Cliente();
+                clienteNovoParaCadastro.Nome = cliente.Nome;
+                clienteNovoParaCadastro.Email = cliente.Email;
+                clienteNovoParaCadastro.Senha = cliente.Senha; // Lembre-se de hashear a senha em produção!
+                clienteNovoParaCadastro.CPF = cliente.CPF;
+
+
                 // Seu código existente de cadastro
-                _db.Clientes.Add(cliente);
+                _db.Clientes.Add(clienteNovoParaCadastro);
                 await _db.SaveChangesAsync();
 
                 // Cria conta associada
-                var conta = new Conta { ClienteId = cliente.Id };
+                var conta = new Conta { ClienteId = clienteNovoParaCadastro.Id };
                 _db.Contas.Add(conta);
                 await _db.SaveChangesAsync();
 
                 // Redireciona para confirmação com dados do cliente
-                return RedirectToAction("RegisterConfirmation", new { email = cliente.Email });
+                return RedirectToAction("RegisterConfirmation", new { email = clienteNovoParaCadastro.Email });
             }
             catch (Exception ex)
             {
